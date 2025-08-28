@@ -1,7 +1,11 @@
 # .github/workflows/deploy.yaml
 
 name: Build and Deploy
-on: [push]
+on:
+  push:
+    branches:
+      - main
+
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -13,7 +17,7 @@ jobs:
         uses: huankong233/hk-vuepress-deploy@master
         env:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          BUILD_SCRIPT: npm install pnpm -g && pnpm install && pnpm run docs:build
+          BUILD_SCRIPT: cd ./packages/docs && npm install pnpm -g && pnpm install && pnpm run docs:build
           BUILD_DIR: src/.vitepress/dist
           TARGET_REPO: huankong-team/atri
           TARGET_BRANCH: docs
