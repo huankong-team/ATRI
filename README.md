@@ -1,4 +1,4 @@
-<img src="ATRI.png" align="right" style="height:450px;width:350px;" />
+<img src="ATRI.png" align="right" style="height:530px;width:450px;" />
 
 # 🤖 ATRI
 
