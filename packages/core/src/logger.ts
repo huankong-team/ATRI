@@ -1,6 +1,6 @@
-import { get_date_time, is_object } from '@/utils.js'
 import clc from 'cli-color'
 import util from 'node:util'
+import { get_date_time, is_object } from './utils.js'
 
 export class Logger {
   prefix: string

@@ -4,7 +4,7 @@
     "outDir": "out",
     "declaration": false,
     "paths": {
-      "@/*": ["../core/src/*"],
+      "@/*": ["./src/*"],
       "@huan_kong/atri": ["../core/src/index.ts"]
     },
     "noEmit": true,

@@ -1,12 +1,12 @@
-import { Bot } from '@/bot.js'
-import { Logger } from '@/logger'
-import type { BasePlugin } from '@/plugin.js'
-import type { NonEmptyArray } from '@/utils.js'
 import { satisfies } from 'compare-versions'
 import type { NCWebsocketOptions } from 'node-napcat-ts'
 import fs from 'node:fs'
 import path from 'node:path'
 import url from 'node:url'
+import { Bot } from './bot.js'
+import { Logger } from './logger.js'
+import type { BasePlugin } from './plugin.js'
+import type { NonEmptyArray } from './utils.js'
 
 export type ATRIConfig = NCWebsocketOptions & {
   base_dir: string

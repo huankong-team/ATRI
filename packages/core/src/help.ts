@@ -1,6 +1,6 @@
-import { BasePlugin } from '@/plugin.js'
 import { Command } from 'commander'
 import { Structs } from 'node-napcat-ts'
+import { BasePlugin } from './plugin.js'
 import { get_command_info } from './utils.js'
 
 export class Plugin extends BasePlugin {

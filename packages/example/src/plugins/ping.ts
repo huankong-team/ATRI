@@ -17,7 +17,7 @@ export class Plugin extends BasePlugin<PingConfig> {
   }
 
   init() {
-    this.reg_command_event<'message', { reply: string }>({
+    this.reg_command_event({
       command_name: 'ping',
       commander: new Command()
         .description('检查Bot是否在线, 并返回指定内容')
@@ -27,6 +27,23 @@ export class Plugin extends BasePlugin<PingConfig> {
           reply: false,
           at: false,
         })
+      },
+    })
+
+    this.reg_command_event<'message', { reply: string }>({
+      command_name: 'ping2',
+      commander: new Command()
+        .description('检查Bot是否在线, 并返回指定内容')
+        .option('-r, --reply <content>', '要回复的内容', this.config.default_reply),
+      callback: async ({ context, params }) => {
+        await this.bot.send_msg(
+          context,
+          convertCQCodeToJSON(params.reply) as SendMessageSegment[],
+          {
+            reply: false,
+            at: false,
+          },
+        )
       },
     })
   }

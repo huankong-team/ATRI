@@ -1,15 +1,15 @@
-import type { ATRI } from '@/atri.js'
-import type { Bot } from '@/bot.js'
+import type { OptionValues } from 'commander'
+import type { MessageHandler, NCWebsocket, NoticeHandler, RequestHandler } from 'node-napcat-ts'
+import type { ATRI } from './atri.js'
+import type { Bot } from './bot.js'
 import type {
   CommandEvent,
   MessageEvent,
   NoticeEvent,
   RegEventOptions,
   RequestEvent,
-} from '@/reg_event.js'
-import type { RemoveField } from '@/utils.js'
-import type { OptionValues } from 'commander'
-import type { MessageHandler, NCWebsocket, NoticeHandler, RequestHandler } from 'node-napcat-ts'
+} from './reg_event.js'
+import type { RemoveField } from './utils.js'
 
 export abstract class BasePlugin<TConfig = object> {
   abstract name: string
