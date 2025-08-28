@@ -1,16 +1,16 @@
-import { Logger } from '@/logger.js'
+import { CommanderError, type Command, type OptionValues } from 'commander'
+import type { NCWebsocketOptions, NodeSegment, SendMessageSegment } from 'node-napcat-ts'
+import { NCWebsocket, Structs } from 'node-napcat-ts'
+import process from 'node:process'
+import { Logger } from './logger.js'
 import type {
   CommandEvent,
   MessageEvent,
   NoticeEvent,
   RegEventOptions,
   RequestEvent,
-} from '@/reg_event.js'
-import { get_command_info, sort_object_array } from '@/utils.js'
-import { CommanderError, type Command, type OptionValues } from 'commander'
-import type { NCWebsocketOptions, NodeSegment, SendMessageSegment } from 'node-napcat-ts'
-import { NCWebsocket, Structs } from 'node-napcat-ts'
-import process from 'node:process'
+} from './reg_event.js'
+import { get_command_info, sort_object_array } from './utils.js'
 
 export type BotConfig = NCWebsocketOptions & {
   prefix: string[]

@@ -6,7 +6,10 @@
     "build": "pnpm --filter @huan_kong/atri build",
     "dev": "pnpm --filter @huan_kong/atri-example dev",
     "start": "pnpm --filter @huan_kong/atri-example start",
-    "type-check": "pnpm --filter @huan_kong/atri type-check && pnpm --filter @huan_kong/atri-example type-check"
+    "type-check": "pnpm --filter @huan_kong/atri type-check && pnpm --filter @huan_kong/atri-example type-check",
+    "docs:dev": "pnpm --filter @huan_kong/atri-docs dev",
+    "docs:build": "pnpm --filter @huan_kong/atri-docs build",
+    "docs:preview": "pnpm --filter @huan_kong/atri-docs preview"
   },
   "dependencies": {
     "tsx": "^4.20.5"

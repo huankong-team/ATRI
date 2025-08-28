@@ -1,0 +1,15 @@
+{
+  "name": "@huan_kong/atri-docs",
+  "description": "docs for atri framework",
+  "author": "huankong233",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "vitepress dev src",
+    "build": "vitepress build src",
+    "preview": "vitepress preview src"
+  },
+  "dependencies": {
+    "vitepress": "^1.6.4"
+  }
+}
