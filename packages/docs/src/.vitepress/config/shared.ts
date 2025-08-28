@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitepress'
 
 export const shared = defineConfig({
-  title: 'node-napcat-ts',
+  title: 'ATRI',
 
   lastUpdated: true,
   cleanUrls: true,
@@ -14,16 +14,16 @@ export const shared = defineConfig({
       {
         postprocess(code) {
           return code.replace(/\[\!\!code/g, '[!code')
-        }
-      }
-    ]
+        },
+      },
+    ],
   },
 
   sitemap: {
-    hostname: 'https://node-napcat-ts.huankong.top',
+    hostname: 'https://atri.huankong.top',
     transformItems(items) {
       return items.filter((item) => !item.url.includes('migration'))
-    }
+    },
   },
 
   /* prettier-ignore */
@@ -47,8 +47,8 @@ export const shared = defineConfig({
     logo: { src: 'https://img.huankong.top/i/2022/11/29/6385ef8c7a675.ico', width: 24, height: 24 },
     //开启本地搜索
     search: {
-      provider: 'local'
+      provider: 'local',
     },
-    socialLinks: [{ icon: 'github', link: 'https://github.com/huankong233/node-napcat-ts' }]
-  }
+    socialLinks: [{ icon: 'github', link: 'https://github.com/huankong-team/atri' }],
+  },
 })
