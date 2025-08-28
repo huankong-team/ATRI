@@ -10,6 +10,10 @@
   "files": [
     "./dist/**/*"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/huankong-team/atri"
+  },
   "scripts": {
     "build": "tsc",
     "type-check": "tsc --noEmit -p tsconfig.json --composite false"
