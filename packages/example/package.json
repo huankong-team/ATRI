@@ -1,0 +1,19 @@
+{
+  "name": "@huan_kong/atri-example",
+  "description": "example for atri framework",
+  "author": "huankong233",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon",
+    "start": "tsx ./src/index.ts",
+    "type-check": "tsc --noEmit -p tsconfig.json --composite false"
+  },
+  "dependencies": {
+    "@huan_kong/atri": "workspace:*",
+    "commander": "^14.0.0",
+    "dotenv": "^17.2.1",
+    "node-napcat-ts": "^0.4.17",
+    "nodemon": "^3.1.10"
+  }
+}

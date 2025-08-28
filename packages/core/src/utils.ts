@@ -1,0 +1,67 @@
+import type { Command } from 'commander'
+import dayjs from 'dayjs'
+
+/**
+ * 获取时间
+ * @returns 2023/6/26 09:46:39
+ */
+export const get_date_time = (split = '/', split2 = ':') =>
+  dayjs().format(`YYYY${split}MM${split}DD HH${split2}mm${split2}ss`)
+
+/**
+ * 排序对象数组
+ * @param arr 对象数组
+ * @param property 属性名
+ * @param sortType up=>升序 down=>降序
+ */
+export function sort_object_array<T extends object>(
+  arr: T[],
+  property: keyof T,
+  sortType: 'up' | 'down' = 'up',
+): T[] {
+  return arr.sort((a, b) => {
+    if (a[property] > b[property]) return sortType === 'up' ? 1 : -1
+    if (a[property] < b[property]) return sortType === 'up' ? -1 : 1
+    return 0
+  })
+}
+
+/**
+ * 判断一个值是否为对象
+ * @param value
+ * @returns
+ */
+export function is_object(value: unknown): value is object {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
+}
+
+export type NonEmptyArray<T> = [T, ...T[]]
+
+export type RemoveField<T, KToRemove extends keyof T> = {
+  [K in keyof T as K extends KToRemove ? never : K]: T[K]
+}
+
+/**
+ * 同时循环两个数组
+ */
+export function* zip<T, U>(iter1: T[], iter2: U[]): Generator<[number, T, U]> {
+  const len = Math.max(iter1.length, iter2.length)
+  for (let i = 0; i < len; i++) {
+    yield [i, iter1[i], iter2[i]]
+  }
+}
+
+/**
+ * 获取命令信息
+ * @param command Command实例
+ * @param fallback 默认值
+ * @param field 读取字段 name|description
+ */
+export function get_command_info(
+  command: Command,
+  fallback: string,
+  field: 'name' | 'description' = 'name',
+) {
+  const command_info = command[field]().replace('/', '')
+  return command_info === '' || command_info === 'program' ? fallback : command_info
+}

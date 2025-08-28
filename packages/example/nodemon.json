@@ -1,0 +1,6 @@
+{
+  "watch": ["./src", "../core/src"],
+  "ext": ".ts",
+  "ignore": [],
+  "exec": "pnpm run start --debug"
+}

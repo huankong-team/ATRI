@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "out",
+    "declaration": false,
+    "paths": {
+      "@/*": ["../core/src/*"],
+      "@huan_kong/atri": ["../core/src/index.ts"]
+    },
+    "noEmit": true,
+    "allowImportingTsExtensions": true
+  },
+  "include": ["src"]
+}
