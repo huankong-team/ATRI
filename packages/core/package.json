@@ -1,6 +1,6 @@
 {
   "name": "@huan_kong/atri",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "QQBOT TypeScript framework",
   "author": "huankong233",
   "license": "MIT",
@@ -22,7 +22,6 @@
     "cli-color": "^2.0.4",
     "commander": "^14.0.0",
     "compare-versions": "^6.1.1",
-    "dayjs": "^1.11.14",
     "node-napcat-ts": "^0.4.17"
   },
   "devDependencies": {

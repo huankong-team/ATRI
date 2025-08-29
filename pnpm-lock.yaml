@@ -45,9 +45,6 @@ importers:
       compare-versions:
         specifier: ^6.1.1
         version: 6.1.1
-      dayjs:
-        specifier: ^1.11.14
-        version: 1.11.15
       node-napcat-ts:
         specifier: ^0.4.17
         version: 0.4.17
@@ -1028,9 +1025,6 @@ packages:
   d@1.0.2:
     resolution: {integrity: sha512-MOqHvMWF9/9MX6nza0KgvFH4HpMU0EF5uUDXqX/BtxtU8NfB0QzRtJ8Oe/6SuS4kbhyzVJwjd97EA4PKrzJ8bw==}
     engines: {node: '>=0.12'}
-
-  dayjs@1.11.15:
-    resolution: {integrity: sha512-MC+DfnSWiM9APs7fpiurHGCoeIx0Gdl6QZBy+5lu8MbYKN5FZEXqOgrundfibdfhGZ15o9hzmZ2xJjZnbvgKXQ==}
 
   debug@4.4.1:
     resolution: {integrity: sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ==}
@@ -2751,8 +2745,6 @@ snapshots:
     dependencies:
       es5-ext: 0.10.64
       type: 2.7.3
-
-  dayjs@1.11.15: {}
 
   debug@4.4.1(supports-color@5.5.0):
     dependencies:

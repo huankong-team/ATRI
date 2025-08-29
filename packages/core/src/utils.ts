@@ -1,12 +1,21 @@
 import type { Command } from 'commander'
-import dayjs from 'dayjs'
 
 /**
  * 获取时间
  * @returns 2023/6/26 09:46:39
  */
-export const get_date_time = (split = '/', split2 = ':') =>
-  dayjs().format(`YYYY${split}MM${split}DD HH${split2}mm${split2}ss`)
+export const get_date_time = (split = '/', split2 = ':') => formatDate(new Date(), split, split2)
+
+export function formatDate(date: Date, split = '/', split2 = ':') {
+  const y = date.getFullYear()
+  const m = date.getMonth() + 1 // 月份从 0 开始
+  const d = date.getDate()
+  const hh = date.getHours()
+  const mm = date.getMinutes()
+  const ss = date.getSeconds()
+
+  return [[y, m, d].join(split), [hh, mm, ss].join(split2)].join(' ')
+}
 
 /**
  * 排序对象数组
