@@ -19,7 +19,7 @@ jobs:
           ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
           BUILD_SCRIPT: cd ./packages/docs && npm install pnpm -g && pnpm install && pnpm run build
           BUILD_DIR: src/.vitepress/dist
-          TARGET_REPO: huankong-team/atri
+          TARGET_REPO: HkTeamX/ATRI
           TARGET_BRANCH: docs
           COMMIT_MESSAGE: 自动打包完成
           CNAME: atri.huankong.top
