@@ -12,12 +12,11 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/HkTeamX/ATRI"
+    "url": "git+https://github.com/HkTeamX/ATRI.git"
   },
   "scripts": {
     "build": "tsc",
-    "type-check": "tsc --noEmit -p tsconfig.json --composite false",
-    "publish": "npm publish"
+    "type-check": "tsc --noEmit -p tsconfig.json --composite false"
   },
   "dependencies": {
     "cli-color": "^2.0.4",

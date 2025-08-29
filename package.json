@@ -3,11 +3,11 @@
   "private": true,
   "packageManager": "pnpm@10.11.0",
   "scripts": {
-    "build": "pnpm --filter @huan_kong/atri build",
     "dev": "pnpm --filter @huan_kong/atri-example dev",
     "start": "pnpm --filter @huan_kong/atri-example start",
     "type-check": "pnpm --filter @huan_kong/atri type-check && pnpm --filter @huan_kong/atri-example type-check",
-    "publish": "pnpm type-check && pnpm --filter @huan_kong/atri build && pnpm --filter @huan_kong/atri publish",
+    "build": "pnpm type-check && pnpm --filter @huan_kong/atri build",
+    "publish": "pnpm build && cd packages/core && npm publish",
     "docs:dev": "pnpm --filter @huan_kong/atri-docs dev",
     "docs:build": "pnpm --filter @huan_kong/atri-docs build",
     "docs:preview": "pnpm --filter @huan_kong/atri-docs preview"
