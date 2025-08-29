@@ -1,17 +1,13 @@
 import { satisfies } from 'compare-versions'
-import type { NCWebsocketOptions } from 'node-napcat-ts'
 import fs from 'node:fs'
 import path from 'node:path'
 import url from 'node:url'
-import { Bot } from './bot.js'
+import { Bot, type BotConfig } from './bot.js'
 import { Logger } from './logger.js'
 import type { BasePlugin } from './plugin.js'
-import type { NonEmptyArray } from './utils.js'
 
-export type ATRIConfig = NCWebsocketOptions & {
+export type ATRIConfig = BotConfig & {
   base_dir: string
-  prefix: NonEmptyArray<string>
-  admin_id: NonEmptyArray<number>
   auto_load_help_plugin?: boolean
 }
 
@@ -26,16 +22,17 @@ export class ATRI {
   config: ATRIConfig
   debug: boolean
 
-  bot!: Bot
+  bot: Bot
 
   loaded_plugins: { [key: string]: BasePlugin<object> } = {}
   waiting_plugins: { [key: string]: WaitingPlugin } = {}
 
-  protected constructor(config: ATRIConfig, debug: boolean) {
+  private constructor(config: ATRIConfig, debug: boolean, bot: Bot) {
     this.logger = new Logger('ATRI', debug)
 
     this.config = config
     this.debug = debug
+    this.bot = bot
 
     this.logger.SUCCESS(`ATRI 初始化完成`)
   }
@@ -46,9 +43,8 @@ export class ATRI {
     logger.DEBUG(`配置信息:`, config)
     logger.INFO(`高性能ですから！`)
 
-    const atri = new ATRI(config, debug)
-
-    atri.bot = await Bot.init(config, debug)
+    const bot = await Bot.init(config, debug)
+    const atri = new ATRI(config, debug, bot)
 
     if (config.auto_load_help_plugin ?? true) {
       await atri.load_plugin('help', import.meta.dirname)
@@ -201,7 +197,7 @@ export class ATRI {
     try {
       config_json = JSON.parse(config_text) as object
       config_json = { ...default_config, ...config_json }
-      fs.writeFileSync(config_file, JSON.stringify(default_config, null, 2))
+      fs.writeFileSync(config_file, JSON.stringify(config_json, null, 2))
     } catch (error) {
       this.logger.ERROR(`配置 ${config_name} 加载失败`, error)
       throw new Error(`配置 ${config_name} 加载失败`)

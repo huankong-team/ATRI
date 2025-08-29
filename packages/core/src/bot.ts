@@ -10,11 +10,11 @@ import type {
   RegEventOptions,
   RequestEvent,
 } from './reg_event.js'
-import { get_command_info, sort_object_array } from './utils.js'
+import { get_command_info, sort_object_array, type NonEmptyArray } from './utils.js'
 
 export type BotConfig = NCWebsocketOptions & {
-  prefix: string[]
-  admin_id: number[]
+  prefix: NonEmptyArray<string>
+  admin_id: NonEmptyArray<number>
 }
 
 export interface BotEvents {
@@ -39,7 +39,7 @@ export class Bot {
     request: [],
   }
 
-  constructor(config: BotConfig, debug = false, ws: NCWebsocket) {
+  private constructor(config: BotConfig, debug = false, ws: NCWebsocket) {
     this.logger = new Logger('Bot', debug)
 
     this.config = config
