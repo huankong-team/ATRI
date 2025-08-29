@@ -16,7 +16,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "type-check": "tsc --noEmit -p tsconfig.json --composite false"
+    "type-check": "tsc --noEmit -p tsconfig.json --composite false",
+    "publish": "npm publish"
   },
   "dependencies": {
     "cli-color": "^2.0.4",
