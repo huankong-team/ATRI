@@ -13,9 +13,9 @@ hero:
       link: /guide/getting-started
     - theme: alt
       text: GitHub
-      link: https://github.com/huankong-team/ATRI
+      link: https://github.com/HkTeamX/ATRI
   image:
-    src: https://github.com/huankong-team/ATRI/blob/main/ATRI.png?raw=true
+    src: https://github.com/HkTeamX/ATRI/blob/main/ATRI.png?raw=true
     alt: Logo
 
 features:

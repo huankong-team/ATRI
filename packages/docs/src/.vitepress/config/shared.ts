@@ -49,6 +49,6 @@ export const shared = defineConfig({
     search: {
       provider: 'local',
     },
-    socialLinks: [{ icon: 'github', link: 'https://github.com/huankong-team/atri' }],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/HkTeamX/ATRI' }],
   },
 })

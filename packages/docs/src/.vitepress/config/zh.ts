@@ -12,7 +12,7 @@ export const zh = defineConfig({
     },
 
     editLink: {
-      pattern: 'https://github.com/huankong233/node-napcat-ts/edit/main/docs/:path',
+      pattern: 'https://github.com/HkTeamX/ATRI/edit/main/docs/:path',
       text: '在 GitHub 上编辑此页面',
     },
 
