@@ -7,13 +7,16 @@ export class Plugin extends BasePlugin {
   version = '1.0.0'
 
   init() {
-    this.reg_command_event<'message', { action: string; params: string }>({
+    this.reg_command_event({
       command_name: 'call',
       commander: new Command()
-        .requiredOption('-a, --action <action>', '要调用的接口')
-        .option('-p, --params [params]', '要调用的接口参数', '{}'),
+        .description('调用NapCat接口')
+        .argument('<action>', '要调用的接口')
+        .argument('[params]', '要调用的接口参数', '{}'),
       need_admin: true,
-      callback: async ({ context, params: { action, params: params_text } }) => {
+      callback: async ({ context, args }) => {
+        const [action, params_text] = args
+
         if (!(action in this.bot.ws)) {
           this.bot.send_msg(context, [Structs.text(`未找到接口: ${action}`)])
           return
