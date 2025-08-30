@@ -6,9 +6,13 @@ import { Bot, type BotConfig } from './bot.js'
 import { Logger } from './logger.js'
 import type { BasePlugin } from './plugin.js'
 
-export type ATRIConfig = BotConfig & {
+export type ATRIConfig = {
+  bot: BotConfig
+  debug?: boolean
   base_dir: string
-  auto_load_help_plugin?: boolean
+  disable_help_plugin?: boolean
+  disable_clear_terminal?: boolean
+  disable_startup_message?: boolean
 }
 
 export interface WaitingPlugin {
@@ -17,69 +21,80 @@ export interface WaitingPlugin {
 }
 
 export class ATRI {
-  logger: Logger
-
-  config: ATRIConfig
-  debug: boolean
-
   bot: Bot
+  logger: Logger
+  config: ATRIConfig
 
   loaded_plugins: { [key: string]: BasePlugin<object> } = {}
   waiting_plugins: { [key: string]: WaitingPlugin } = {}
 
-  private constructor(config: ATRIConfig, debug: boolean, bot: Bot) {
-    this.logger = new Logger('ATRI', debug)
-
-    this.config = config
-    this.debug = debug
+  constructor(config: ATRIConfig, bot: Bot) {
     this.bot = bot
+    this.logger = new Logger('ATRI', config.debug)
+    this.config = config
 
     this.logger.SUCCESS(`ATRI 初始化完成`)
   }
 
-  static async init(config: ATRIConfig, debug = false) {
-    const logger = new Logger('ATRI', debug)
+  static async init(config: ATRIConfig) {
+    const logger = new Logger('ATRI', config.debug)
+
+    // 清空终端
+    if (!config.disable_clear_terminal) console.log('\x1Bc')
+
+    if (!config.disable_startup_message) {
+      console.log(
+        `%c            __               .__ 
+_____     _/  |_   _______   |__|
+\\__  \\    \\   __\\  \\_  __ \\  |  |
+ / __ \\_   |  |     |  | \\/  |  |
+(____  /   |__|     |__|     |__|
+     \\/`,
+        `font-family: Consolas;`,
+      )
+      logger.INFO(`アトリは、高性能ですから！`)
+    }
+
     logger.DEBUG(`初始化 ATRI 实例`)
     logger.DEBUG(`配置信息:`, config)
-    logger.INFO(`高性能ですから！`)
 
-    const bot = await Bot.init(config, debug)
-    const atri = new ATRI(config, debug, bot)
+    if (!('debug' in config.bot)) config.bot.debug = config.debug
+    const bot = await Bot.init(config.bot)
 
-    if (config.auto_load_help_plugin ?? true) {
-      await atri.load_plugin('help', import.meta.dirname)
-    }
+    const atri = new ATRI(config, bot)
+    if (!config.disable_help_plugin) await atri.load_plugin('help', import.meta.dirname)
 
     return atri
   }
 
-  async load_plugin(plugin_path: string, base_dir = this.config.base_dir) {
+  /**
+   * 0 - 加载成功
+   * 1 - 缺少依赖
+   * 2 - 其他错误
+   */
+  async load_plugin(plugin_path: string, base_dir = this.config.base_dir): Promise<0 | 1 | 2> {
     this.logger.DEBUG(`开始加载 ${plugin_path} 插件`)
 
     let plugin_dir = path.join(base_dir, plugin_path)
-    this.logger.DEBUG(`插件目录: ${plugin_dir}`)
+    this.logger.DEBUG(`插件导入路径: ${plugin_dir}`)
 
     if (!fs.existsSync(plugin_dir)) {
-      // 加载 .ts 判断是否存在
-      let plugin_file = `${plugin_dir}.ts`
-      this.logger.DEBUG(`插件非文件夹插件, 尝试为单文件插件`)
-      this.logger.DEBUG(`新插件目录: ${plugin_file}`)
+      plugin_dir = `${plugin_dir}.ts`
 
-      if (!fs.existsSync(plugin_file)) {
-        // 加载 .js 判断是否存在
-        const plugin_file_js = `${plugin_dir}.js`
-        this.logger.DEBUG(`插件非但文件TS插件, 尝试为单文件JS插件`)
-        this.logger.DEBUG(`新插件目录: ${plugin_file_js}`)
+      this.logger.DEBUG(`插件非文件夹插件, 尝试为单文件TS插件`)
+      this.logger.DEBUG(`新插件导入路径: ${plugin_dir}`)
+    }
 
-        if (!fs.existsSync(plugin_file_js)) {
-          this.logger.ERROR(`插件 ${plugin_dir} 入口文件不存在`)
-          return false
-        }
+    if (!fs.existsSync(plugin_dir)) {
+      plugin_dir = `${plugin_dir}.js`
 
-        plugin_file = plugin_file_js
-      }
+      this.logger.DEBUG(`插件非文件夹插件, 尝试为单文件JS插件`)
+      this.logger.DEBUG(`新插件导入路径: ${plugin_dir}`)
+    }
 
-      plugin_dir = plugin_file
+    if (!fs.existsSync(plugin_dir)) {
+      this.logger.ERROR(`插件 ${plugin_dir} 入口文件不存在`)
+      return 2
     }
 
     let plugin_entity: BasePlugin | undefined
@@ -89,23 +104,26 @@ export class ATRI {
 
       if (!plugin_variable) {
         this.logger.ERROR(`插件 ${plugin_path} 加载失败, 插件未导出 Plugin 变量`)
-        return false
+        return 2
       }
 
-      if (typeof plugin_variable !== 'function' || !plugin_variable.toString().includes('class')) {
+      if (
+        typeof plugin_variable !== 'function' ||
+        !plugin_variable.toString().startsWith('class Plugin extends BasePlugin')
+      ) {
         this.logger.ERROR(`插件 ${plugin_path} 加载失败, 插件不是有效的类`)
-        return false
+        return 2
       }
 
       plugin_entity = new plugin_variable(this) as BasePlugin
       if (!plugin_entity.name || !plugin_entity.version) {
         this.logger.ERROR(`插件 ${plugin_path} 加载失败, 插件缺少必要参数`)
-        return false
+        return 2
       }
 
       if (this.loaded_plugins[plugin_entity.name]) {
-        this.logger.INFO(`插件 ${plugin_entity.name} 已加载, 跳过本次加载`)
-        return true
+        this.logger.INFO(`插件 ${plugin_entity.name} 已加载过, 跳过本次加载`)
+        return 2
       }
 
       // 检查依赖
@@ -116,7 +134,7 @@ export class ATRI {
             plugin_path,
             dependencies: plugin_entity.dependencies ?? {},
           }
-          return false
+          return 1
         }
       }
 
@@ -135,7 +153,7 @@ export class ATRI {
       await plugin_entity.init?.()
     } catch (error) {
       this.logger.ERROR(`加载插件 ${plugin_entity?.name ?? plugin_path} 失败`, error)
-      return false
+      return 2
     }
 
     this.loaded_plugins[plugin_entity.name] = plugin_entity
@@ -148,15 +166,15 @@ export class ATRI {
         // 检查依赖
         const result = this.check_dependencies(plugin_name, waiting_plugin.dependencies)
         if (result) {
-          this.logger.INFO(`等待队列中的插件 ${plugin_name} 依赖满足, 开始加载`)
+          this.logger.DEBUG(`等待队列中的插件 ${plugin_name} 依赖满足, 开始加载`)
           const load_result = await this.load_plugin(waiting_plugin.plugin_path)
           // 移除等待队列
-          if (load_result) delete this.waiting_plugins[plugin_name]
+          if (load_result === 0) delete this.waiting_plugins[plugin_name]
         }
       }
     }
 
-    return true
+    return 0
   }
 
   private check_dependencies(
@@ -166,7 +184,7 @@ export class ATRI {
     for (const [name, version] of Object.entries(dependencies)) {
       const loaded_plugin = this.loaded_plugins[name]
       if (!loaded_plugin) {
-        this.logger.ERROR(`插件 ${plugin_name} 加载失败, 缺少依赖插件 ${name}, 已加入等待队列`)
+        this.logger.DEBUG(`插件 ${plugin_name} 加载失败, 缺少依赖插件 ${name}, 已加入等待队列`)
         return false
       }
 
@@ -207,5 +225,27 @@ export class ATRI {
     this.logger.SUCCESS(`配置 ${config_name} 加载成功`)
 
     return config_json
+  }
+
+  async load_plugins(plugins: string[], base_dir = this.config.base_dir) {
+    for (const plugin of plugins) {
+      const result = await this.load_plugin(plugin, base_dir)
+      if (result === 2) return false
+    }
+    return true
+  }
+
+  check_waiting_plugins() {
+    const plugins = Object.keys(this.waiting_plugins)
+    if (plugins.length <= 0) {
+      this.logger.SUCCESS(`所有插件已加载完成`)
+      return false
+    }
+    this.logger.ERROR(`====================================================================`)
+    this.logger.ERROR(`请检查, 以下插件正在等待依赖:`)
+    this.logger.ERROR(plugins.join(', '))
+    this.logger.ERROR(`====================================================================`)
+    this.logger.DEBUG('插件信息:', this.waiting_plugins)
+    process.exit(1)
   }
 }

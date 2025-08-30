@@ -1,45 +1,45 @@
-import { ATRI, Logger } from '@huan_kong/atri'
+import { ATRI, Logger, performance_counter, type BotConfig } from '@huan_kong/atri'
 import { config } from 'dotenv'
-import { type NCWebsocketOptionsHost } from 'node-napcat-ts'
+import type { NCWebsocketOptionsHost } from 'node-napcat-ts'
 import path from 'node:path'
 import process from 'node:process'
 
-const start_time = performance.now()
-
-// 清空终端
-console.log('\x1Bc')
+const get_elapsed_time = performance_counter()
 
 config({
   path: path.join(import.meta.dirname, '../.env'),
   quiet: true,
 })
 
-const logger = new Logger('KKBot')
+const debug = process.argv.includes('--debug')
+
+const logger = new Logger('KKBot', debug)
 logger.INFO('开始加载 KKBOT')
 
-const atri = await ATRI.init(
-  {
-    base_dir: import.meta.dirname,
-    prefix: ['/', '!', '.', '#'],
-    admin_id: [2564076459],
-    protocol: (process.env.NC_PROTOCOL as NCWebsocketOptionsHost['protocol']) ?? 'ws',
+const bot: BotConfig = {
+  prefix: JSON.parse(process.env.PREFIX ?? '["/"]'),
+  admin_id: JSON.parse(process.env.ADMIN_ID ?? '[10001]'),
+  connection: {
+    protocol: (process.env.NC_PROTOCOL ?? 'ws') as NCWebsocketOptionsHost['protocol'],
     host: process.env.NC_HOST ?? '127.0.0.1',
     port: parseInt(process.env.NC_PORT ?? '3001'),
     accessToken: process.env.NC_ACCESS_TOKEN,
-    reconnection: {
-      enable: true,
-      attempts: 1,
-      delay: 5000,
-    },
   },
-  process.argv.includes('--debug'),
-)
+  reconnection: {
+    enable: process.env.NC_RECONNECTION_ENABLE === 'true',
+    attempts: parseInt(process.env.NC_RECONNECTION_ATTEMPTS ?? '10'),
+    delay: parseInt(process.env.NC_RECONNECTION_DELAY ?? '5000'),
+  },
+}
 
-await atri.load_plugin('./plugins/ping')
-await atri.load_plugin('./plugins/call')
+const atri = await ATRI.init({
+  bot,
+  debug,
+  base_dir: import.meta.dirname,
+})
 
-logger.SUCCESS(`所有插件已加载完成`)
+await atri.load_plugins(['./plugins/ping', './plugins/call'])
 
-const end_time = performance.now()
+atri.check_waiting_plugins()
 
-logger.INFO(`KKBOT 加载完成! 总耗时: ${(end_time - start_time).toFixed(2)}ms`)
+logger.INFO(`KKBOT 加载完成! 总耗时: ${get_elapsed_time()}ms`)

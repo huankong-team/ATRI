@@ -50,9 +50,19 @@ export const zh = defineConfig({
 function nav(): DefaultTheme.NavItem[] {
   return [
     {
-      text: '指南',
-      link: '/guide/getting-started',
-      activeMatch: '/guide/',
+      text: '安装',
+      link: '/guide/install',
+      activeMatch: '/guide/install',
+    },
+    {
+      text: '使用',
+      link: '/guide/use',
+      activeMatch: '/guide/use',
+    },
+    {
+      text: '开发插件',
+      link: '/guide/plugins',
+      activeMatch: '/guide/plugins',
     },
   ]
 }
@@ -60,9 +70,13 @@ function nav(): DefaultTheme.NavItem[] {
 function sidebarGuide(): DefaultTheme.SidebarItem[] {
   return [
     {
-      text: '简介',
+      text: '快速开始',
       collapsed: false,
-      items: [{ text: '快速开始', link: 'getting-started' }],
+      items: [
+        { text: '安装', link: 'install' },
+        { text: '使用', link: 'use' },
+        { text: '开发插件', link: 'plugins' },
+      ],
     },
   ]
 }
