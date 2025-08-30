@@ -1,65 +1,12 @@
-# 快速开始
-
-## 安装
-
-### 前置准备
-
-- [Node.js](https://nodejs.org/) 20 及以上版本。
-
-`ATRI` 使用 `pnpm` 作为默认包管理工具,
-
-原则上兼容市面上大部分包管理器但不保证不出问题。
-
-::: code-group
-
-```sh [pnpm]
-pnpm add @huan_kong/atri
-```
-
-:::
-
-::: tip 注意
-
-ATRI 是仅 ESM 的软件包。不要使用 `require()` 导入它，并确保最新的 `package.json` 包含 `"type": "module"`，或者更改相关文件的文件扩展名，例如 `config.js` 到 `.mjs`/`.mts`。
-
-此外，在异步 CJS 上下文中，可以使用 `await import('@huan_kong/atri')` 代替。
-
-:::
-
-## 使用
-
-```ts
-// 导入 ATRI 类
-import { ATRI } from '@huan_kong/atri'
-
-// 使用 init 函数初始化
-const atri = await ATRI.init(
-  {
-    base_dir: import.meta.dirname,
-    prefix: ['/', '!', '.', '#'],
-    admin_id: [10001],
-    protocol: 'ws',
-    host: '127.0.0.1',
-    port: 3001,
-    accessToken: '',
-    reconnection: {
-      enable: true,
-      attempts: 1,
-      delay: 5000,
-    },
-  },
-  false,
-)
-
-// 加载插件
-await atri.load_plugin('./plugins/ping')
-```
-
-## 编写插件
+# 开发插件
 
 如果为单文件, 直接编写即可
 
-如果为文件夹, 需要在 `index.ts/js` 文件中导出 `Plugin` 类
+如果为文件夹, 需要在 `index.ts` / `index.js` 文件中导出 `Plugin` 类
+
+还有一些高级用法, 可以查阅 `ts` 的类型文件
+
+更多示例可以参考 [example](https://github.com/HkTeamX/ATRI/tree/main/packages/example)
 
 ```ts
 import { BasePlugin } from '@huan_kong/atri'
@@ -72,6 +19,7 @@ export interface PingConfig {
 
 //             ↓ 类名固定                   ↓ 传入配置文件的类型
 export class Plugin extends BasePlugin<PingConfig> {
+  // ↓ 需要唯一
   name = 'ping'
   version = '1.0.0'
   // 和 package.json 使用一样的版本比较

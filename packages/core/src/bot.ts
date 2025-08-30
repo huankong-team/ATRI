@@ -10,11 +10,20 @@ import type {
   RegEventOptions,
   RequestEvent,
 } from './reg_event.js'
-import { get_command_info, sort_object_array, type NonEmptyArray } from './utils.js'
+import {
+  get_command_info,
+  performance_counter,
+  sort_object_array,
+  type NonEmptyArray,
+  type RemoveField,
+} from './utils.js'
 
-export type BotConfig = NCWebsocketOptions & {
+export type BotConfig = {
+  debug?: boolean
   prefix: NonEmptyArray<string>
   admin_id: NonEmptyArray<number>
+  connection: RemoveField<NCWebsocketOptions, 'reconnection'>
+  reconnection: NCWebsocketOptions['reconnection']
 }
 
 export interface BotEvents {
@@ -26,11 +35,8 @@ export interface BotEvents {
 
 export class Bot {
   logger: Logger
-
-  config: BotConfig
-  debug: boolean
-
   ws: NCWebsocket
+  config: BotConfig
 
   events: BotEvents = {
     command: [],
@@ -39,14 +45,12 @@ export class Bot {
     request: [],
   }
 
-  private constructor(config: BotConfig, debug = false, ws: NCWebsocket) {
-    this.logger = new Logger('Bot', debug)
-
-    this.config = config
-    this.debug = debug
+  constructor(config: BotConfig, ws: NCWebsocket) {
+    this.logger = new Logger('Bot', config.debug)
     this.ws = ws
+    this.config = config
 
-    if (debug) {
+    if (config.debug) {
       ws.on('api.preSend', (context) => this.logger.DEBUG('发送API请求', context))
       ws.on('api.response.success', (context) => this.logger.DEBUG('收到API成功响应', context))
       ws.on('api.response.failure', (context) => this.logger.DEBUG('收到API失败响应', context))
@@ -165,17 +169,21 @@ export class Bot {
     this.logger.SUCCESS(`Bot 初始化完成`)
   }
 
-  static async init(config: BotConfig, debug = false) {
+  static async init(config: BotConfig) {
     return new Promise<Bot>((resolve, reject) => {
-      const logger = new Logger('Bot', debug)
+      const logger = new Logger('Bot', config.debug)
       logger.DEBUG(`初始化 Bot 实例`)
       logger.DEBUG(`配置信息:`, config)
 
-      const ws = new NCWebsocket(config)
-      let start_time = performance.now()
+      const ws = new NCWebsocket({
+        ...config.connection,
+        reconnection: config.reconnection,
+      })
+
+      let get_elapsed_time = performance_counter()
 
       ws.on('socket.connecting', (context) => {
-        start_time = performance.now()
+        get_elapsed_time = performance_counter()
         logger.INFO(`连接中#${context.reconnection.nowAttempts}/${context.reconnection.attempts}`)
       })
 
@@ -201,10 +209,9 @@ export class Bot {
           `连接成功#${context.reconnection.nowAttempts}/${context.reconnection.attempts}`,
         )
 
-        const end_time = performance.now()
-        logger.INFO(`连接 NapCat 耗时: ${(end_time - start_time).toFixed(2)}ms`)
+        logger.INFO(`连接 NapCat 耗时: ${get_elapsed_time()}ms`)
 
-        resolve(new Bot(config, debug, ws))
+        resolve(new Bot(config, ws))
       })
 
       ws.connect()
@@ -242,9 +249,12 @@ export class Bot {
     }
   }
 
-  // ret: 0 成功
-  // ret: 1 未匹配命令特征
-  // ret: 2 参数不合法
+  /**
+   * 解析命令
+   * 0 - 解析成功
+   * 1 - 未匹配命令特征
+   * 2 - 参数不合法
+   */
   parse_command(
     raw_message: string,
     command_name: CommandEvent['command_name'],

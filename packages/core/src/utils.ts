@@ -74,3 +74,11 @@ export function get_command_info(
   const command_info = command[field]().replace('/', '')
   return command_info === '' || command_info === 'program' ? fallback : command_info
 }
+
+export function performance_counter() {
+  const start_time = performance.now()
+  return () => {
+    const end_time = performance.now()
+    return (end_time - start_time).toFixed(2)
+  }
+}
