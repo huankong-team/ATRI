@@ -75,18 +75,19 @@ _____     _/  |_   _______   |__|
   async load_plugin(plugin_path: string, base_dir = this.config.base_dir): Promise<0 | 1 | 2> {
     this.logger.DEBUG(`开始加载 ${plugin_path} 插件`)
 
-    let plugin_dir = path.join(base_dir, plugin_path)
+    const base_plugin_dir = path.join(base_dir, plugin_path)
+    let plugin_dir = base_plugin_dir
     this.logger.DEBUG(`插件导入路径: ${plugin_dir}`)
 
     if (!fs.existsSync(plugin_dir)) {
-      plugin_dir = `${plugin_dir}.ts`
+      plugin_dir = `${base_plugin_dir}.ts`
 
       this.logger.DEBUG(`插件非文件夹插件, 尝试为单文件TS插件`)
       this.logger.DEBUG(`新插件导入路径: ${plugin_dir}`)
     }
 
     if (!fs.existsSync(plugin_dir)) {
-      plugin_dir = `${plugin_dir}.js`
+      plugin_dir = `${base_plugin_dir}.js`
 
       this.logger.DEBUG(`插件非文件夹插件, 尝试为单文件JS插件`)
       this.logger.DEBUG(`新插件导入路径: ${plugin_dir}`)
